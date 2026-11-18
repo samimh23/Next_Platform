@@ -64,3 +64,59 @@ export interface Menu {
   categories: Category[];
   products: Product[];
 }
+
+// ── Sales (amounts in millimes) ────────────────────────────
+
+export interface VatLine {
+  rateBp: number;
+  ttc: number;
+  ht: number;
+  vat: number;
+}
+
+export interface SalesSummary {
+  date: string;
+  revenue: number;
+  ticketCount: number;
+  averageTicket: number;
+  itemCount: number;
+  cancelledCount: number;
+  openCount: number;
+  byPaymentMethod: { method: string; amount: number; count: number }[];
+  /** Tunisia hour 0–23, only hours with sales. */
+  byHour: { hour: number; revenue: number; tickets: number }[];
+  topProducts: { productId: string; name: string; qty: number; revenue: number }[];
+  vat: VatLine[];
+}
+
+export type OrderStatus = 'open' | 'paid' | 'cancelled';
+
+export interface OrderView {
+  id: string;
+  status: OrderStatus;
+  type: string;
+  receiptNumber: string | null;
+  openedAt: string;
+  closedAt: string | null;
+  total: number;
+  itemCount: number;
+  paymentMethod: string | null;
+  deviceCode: string | null;
+}
+
+export interface OrderDetail extends OrderView {
+  lines: {
+    id: string;
+    productId: string;
+    name: string;
+    unitPrice: number;
+    modifiersPrice: number;
+    modifiers: { id?: string; name: string; extraPrice?: number }[];
+    qty: number;
+    vatRateBp: number;
+    voided: boolean;
+    total: number;
+  }[];
+  payments: { method: string; amount: number; tendered: number; changeGiven: number }[];
+  vat: VatLine[];
+}

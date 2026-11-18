@@ -3,7 +3,7 @@ import { Suspense } from 'react';
 import { getMe, ownerFetch } from '@/lib/backend/server';
 import type { Device, PairingCode } from '@/lib/backend/types';
 import { AddDevice } from './add-device';
-import { AutoRefresh } from './auto-refresh';
+import { AutoRefresh } from '@/components/auto-refresh';
 import { DeviceList } from './device-list';
 
 export const metadata: Metadata = { title: 'Caisses' };
