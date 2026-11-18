@@ -15,6 +15,9 @@ const MESSAGES: Record<string, string> = {
   EMAIL_TAKEN: 'Un compte existe déjà avec cet email.',
   TOO_MANY_REQUESTS: 'Trop de tentatives. Réessayez dans une minute.',
   VALIDATION_ERROR: 'Certaines informations ne sont pas valides.',
+  FORBIDDEN: "Seul le propriétaire peut faire cette action.",
+  DEVICE_NOT_FOUND: 'Cette caisse est introuvable.',
+  BRANCH_NOT_FOUND: 'Cet établissement est introuvable.',
   NETWORK: 'Le serveur ne répond pas. Réessayez dans un instant.',
 };
 

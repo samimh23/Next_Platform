@@ -11,11 +11,11 @@ import { BackendError } from './errors';
  * The proxy has already refreshed the token if needed; if the backend still
  * says 401, the session is over → back to login.
  */
-export async function ownerFetch<T>(path: string): Promise<T> {
+export async function ownerFetch<T>(path: string, init: { method?: string; body?: unknown } = {}): Promise<T> {
   const token = (await cookies()).get(ACCESS_COOKIE)?.value;
   if (!token) redirect('/login');
   try {
-    return await callBackend<T>(path, { accessToken: token });
+    return await callBackend<T>(path, { ...init, accessToken: token });
   } catch (e) {
     if (e instanceof BackendError && e.status === 401) redirect('/login');
     throw e;
