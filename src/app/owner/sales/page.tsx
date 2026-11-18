@@ -79,6 +79,7 @@ async function SalesList({ searchParams }: Pick<PageProps<'/owner/sales'>, 'sear
                 <tr className="border-b">
                   <th className="px-4 py-2 font-medium">Heure</th>
                   <th className="px-4 py-2 font-medium">Ticket</th>
+                  <th className="px-4 py-2 font-medium">Table</th>
                   <th className="hidden px-4 py-2 font-medium sm:table-cell">Caisse</th>
                   <th className="px-4 py-2 font-medium">Statut</th>
                   <th className="px-4 py-2 text-right font-medium">Total</th>
@@ -93,6 +94,7 @@ async function SalesList({ searchParams }: Pick<PageProps<'/owner/sales'>, 'sear
                         {o.receiptNumber ?? 'Sans numéro'}
                       </Link>
                     </td>
+                    <td className="px-4 py-2">{o.tableName ?? <span className="text-muted-foreground">Comptoir</span>}</td>
                     <td className="hidden px-4 py-2 sm:table-cell">{o.deviceCode ?? '—'}</td>
                     <td className="px-4 py-2">
                       <Badge variant={STATUS[o.status].variant}>{STATUS[o.status].label}</Badge>

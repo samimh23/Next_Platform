@@ -102,6 +102,8 @@ export interface OrderView {
   itemCount: number;
   paymentMethod: string | null;
   deviceCode: string | null;
+  /** Table name at sale time; null = counter / takeaway. */
+  tableName: string | null;
 }
 
 export interface OrderDetail extends OrderView {
@@ -129,4 +131,24 @@ export interface Staff {
   name: string;
   role: StaffRole;
   active: boolean;
+}
+
+/** A room: "Salle", "Terrasse". */
+export interface Area {
+  id: string;
+  name: string;
+  sortOrder: number;
+}
+
+export interface DiningTable {
+  id: string;
+  areaId: string;
+  name: string;
+  seats: number;
+  sortOrder: number;
+}
+
+export interface Floor {
+  areas: Area[];
+  tables: DiningTable[];
 }

@@ -43,7 +43,8 @@ async function Order({ params }: Pick<PageProps<'/owner/sales/[orderId]'>, 'para
       <div className="flex flex-wrap items-baseline justify-between gap-2">
         <h1 className="text-2xl font-bold tracking-tight">{o.receiptNumber ?? 'Ticket sans numéro'}</h1>
         <p className="text-muted-foreground">
-          {formatTimeTunis(o.closedAt ?? o.openedAt)} · caisse {o.deviceCode ?? '—'}{' '}
+          {formatTimeTunis(o.closedAt ?? o.openedAt)} · {o.tableName ? `table ${o.tableName}` : 'comptoir'} · caisse{' '}
+          {o.deviceCode ?? '—'}{' '}
           <Badge variant={o.status === 'cancelled' ? 'destructive' : o.status === 'open' ? 'outline' : 'secondary'}>
             {o.status === 'paid' ? 'Payé' : o.status === 'cancelled' ? 'Annulé' : 'En cours'}
           </Badge>
