@@ -18,6 +18,10 @@ const MESSAGES: Record<string, string> = {
   FORBIDDEN: "Seul le propriétaire peut faire cette action.",
   DEVICE_NOT_FOUND: 'Cette caisse est introuvable.',
   BRANCH_NOT_FOUND: 'Cet établissement est introuvable.',
+  CATEGORY_NOT_EMPTY: 'Cette catégorie contient encore des produits. Déplacez-les ou supprimez-les d’abord.',
+  CATEGORY_NOT_FOUND: 'Cette catégorie est introuvable.',
+  PRODUCT_NOT_FOUND: 'Ce produit est introuvable.',
+  INVALID_MODIFIERS: 'Les options ne sont pas valides (vérifiez minimum et maximum).',
   NETWORK: 'Le serveur ne répond pas. Réessayez dans un instant.',
 };
 
