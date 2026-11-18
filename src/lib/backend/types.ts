@@ -15,6 +15,10 @@ export interface Device {
   /** Events received from this POS. */
   lastSeq: number;
   pairedAt: string;
+  /** The Hub always can; other POS only if the owner allows it. */
+  canTakePayments: boolean;
+  /** Hub only: "192.168.1.20:7700" on the café Wi-Fi. */
+  lanAddress: string | null;
 }
 
 export interface PairingCode {

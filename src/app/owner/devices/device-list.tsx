@@ -4,7 +4,7 @@ import { useState, useTransition } from 'react';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
-import { setDeviceDisabledAction } from '@/lib/actions/devices';
+import { setDeviceDisabledAction, setDevicePaymentsAction } from '@/lib/actions/devices';
 import type { Device } from '@/lib/backend/types';
 
 const ROLE_LABEL: Record<Device['role'], string> = { hub: 'Caisse principale', pos: 'Caisse', kds: 'Écran cuisine' };
@@ -27,6 +27,13 @@ export function DeviceList({ devices, canManage }: { devices: Device[]; canManag
 function DeviceCard({ device: d, canManage }: { device: Device; canManage: boolean }) {
   const [pending, startTransition] = useTransition();
   const [error, setError] = useState<string | null>(null);
+
+  const togglePayments = () =>
+    startTransition(async () => {
+      setError(null);
+      const r = await setDevicePaymentsAction(d.id, !d.canTakePayments);
+      if (!r.ok) setError(r.error);
+    });
 
   const toggle = () => {
     if (!d.disabled && !confirm(`Désactiver « ${d.name} » ? Elle sera bloquée à sa prochaine synchronisation.`)) return;
@@ -54,6 +61,28 @@ function DeviceCard({ device: d, canManage }: { device: Device; canManage: boole
           <p className="text-sm text-muted-foreground">
             {ROLE_LABEL[d.role]} · {d.lastSeq} événement{d.lastSeq > 1 ? 's' : ''} reçu{d.lastSeq > 1 ? 's' : ''}
           </p>
+          {d.role === 'hub' && (
+            <p className="text-sm text-muted-foreground">
+              {d.lanAddress
+                ? `Les tablettes des serveurs se connectent à elle par le Wi-Fi (${d.lanAddress}).`
+                : 'Adresse Wi-Fi pas encore connue : elle s’affiche quand la caisse est ouverte.'}
+            </p>
+          )}
+          {d.role === 'pos' && (
+            <label className="mt-1 flex w-fit items-center gap-2 text-sm">
+              <input
+                type="checkbox"
+                className="size-4 accent-primary"
+                checked={d.canTakePayments}
+                disabled={!canManage || pending || d.disabled}
+                onChange={togglePayments}
+              />
+              Peut encaisser
+              <span className="text-muted-foreground">
+                {d.canTakePayments ? '' : '· sinon le serveur « demande l’addition » à la caisse principale'}
+              </span>
+            </label>
+          )}
         </div>
         <div className="flex items-center gap-3">
           <span className="flex items-center gap-1.5 text-sm" title={d.lastSeenAt ? `Vue ${relative(d.lastSeenAt)}` : 'Jamais synchronisée'}>

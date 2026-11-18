@@ -43,6 +43,22 @@ export async function setDeviceDisabledAction(deviceId: string, disabled: boolea
   }
 }
 
+/** Let a server POS take payments (e.g. a terrace POS with its own cash drawer), or not. */
+export async function setDevicePaymentsAction(deviceId: string, allowed: boolean): Promise<ActionResult<Device>> {
+  const input = z.object({ deviceId: Uuid, allowed: z.boolean() }).safeParse({ deviceId, allowed });
+  if (!input.success) return { ok: false, error: 'Demande invalide.' };
+  try {
+    const device = await ownerFetch<Device>(`/v1/owner/devices/${input.data.deviceId}`, {
+      method: 'PATCH',
+      body: { canTakePayments: input.data.allowed },
+    });
+    refresh();
+    return { ok: true, data: device };
+  } catch (e) {
+    return { ok: false, error: messageFor(e) };
+  }
+}
+
 export async function renameDeviceAction(deviceId: string, name: string): Promise<ActionResult<Device>> {
   const input = z.object({ deviceId: Uuid, name: z.string().trim().min(1).max(60) }).safeParse({ deviceId, name });
   if (!input.success) return { ok: false, error: 'Le nom doit faire entre 1 et 60 caractères.' };
