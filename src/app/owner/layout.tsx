@@ -8,6 +8,7 @@ const NAV = [
   { href: '/owner/dashboard', label: 'Tableau de bord' },
   { href: '/owner/sales', label: 'Ventes' },
   { href: '/owner/menu', label: 'Menu' },
+  { href: '/owner/staff', label: 'Personnel' },
   { href: '/owner/devices', label: 'Caisses' },
 ];
 

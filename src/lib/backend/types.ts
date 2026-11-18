@@ -120,3 +120,13 @@ export interface OrderDetail extends OrderView {
   payments: { method: string; amount: number; tendered: number; changeGiven: number }[];
   vat: VatLine[];
 }
+
+export type StaffRole = 'manager' | 'cashier' | 'server' | 'kitchen';
+
+/** A staff member (the PIN hash never leaves the backend except to paired POS). */
+export interface Staff {
+  id: string;
+  name: string;
+  role: StaffRole;
+  active: boolean;
+}
