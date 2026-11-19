@@ -66,6 +66,20 @@ async function Dashboard({ searchParams }: Pick<PageProps<'/owner/dashboard'>, '
             value={`${s.cancelledCount} / ${s.openCount}`}
             hint={s.cancelledCount > 0 ? 'Vérifiez les annulations dans Ventes' : undefined}
           />
+          <StatTile
+            label="Remises & offerts"
+            value={formatDT(s.discounts.amount)}
+            hint={
+              s.discounts.lines > 0
+                ? `${s.discounts.lines} remise${s.discounts.lines > 1 ? 's' : ''}${s.discounts.freeItems > 0 ? ` · ${s.discounts.freeItems} offert${s.discounts.freeItems > 1 ? 's' : ''}` : ''}`
+                : undefined
+            }
+          />
+          <StatTile
+            label="Remboursés"
+            value={String(s.refunds.count)}
+            hint={s.refunds.count > 0 ? `${formatDT(s.refunds.amount)} rendus — détail dans Ventes` : undefined}
+          />
         </div>
       </section>
 

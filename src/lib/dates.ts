@@ -31,3 +31,20 @@ export function formatTimeTunis(iso: string): string {
 }
 
 export const PAYMENT_LABEL: Record<string, string> = { cash: 'Espèces', card: 'Carte', mixed: 'Mixte' };
+
+/** Why a discount was given (same codes as the POS). */
+export const DISCOUNT_REASON: Record<string, string> = {
+  geste: 'Geste commercial',
+  staff: 'Personnel',
+  error: 'Erreur',
+  complaint: 'Réclamation client',
+  other: 'Autre',
+};
+
+/** Why something sent was cancelled, or a ticket refunded (same codes as the POS). */
+export const CANCEL_REASON: Record<string, string> = {
+  changed_mind: 'Le client a changé d’avis',
+  error: 'Erreur de saisie',
+  quality: 'Problème de qualité',
+  other: 'Autre',
+};

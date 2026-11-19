@@ -86,6 +86,10 @@ export interface SalesSummary {
   itemCount: number;
   cancelledCount: number;
   openCount: number;
+  /** "Remises & offerts" on paid tickets. */
+  discounts: { amount: number; lines: number; freeItems: number };
+  /** Tickets refunded after payment (out of revenue). */
+  refunds: { count: number; amount: number };
   byPaymentMethod: { method: string; amount: number; count: number }[];
   /** Tunisia hour 0–23, only hours with sales. */
   byHour: { hour: number; revenue: number; tickets: number }[];
@@ -93,7 +97,7 @@ export interface SalesSummary {
   vat: VatLine[];
 }
 
-export type OrderStatus = 'open' | 'paid' | 'cancelled';
+export type OrderStatus = 'open' | 'paid' | 'cancelled' | 'refunded';
 
 export interface OrderView {
   id: string;
@@ -108,6 +112,8 @@ export interface OrderView {
   deviceCode: string | null;
   /** Table name at sale time; null = counter / takeaway. */
   tableName: string | null;
+  refundedAt: string | null;
+  refundReason: string | null;
 }
 
 export interface OrderDetail extends OrderView {
@@ -121,6 +127,13 @@ export interface OrderDetail extends OrderView {
     qty: number;
     vatRateBp: number;
     voided: boolean;
+    /** Discount on the line (millimes), its type and reason. */
+    discount: number;
+    discountType: 'free' | 'percent' | 'amount' | null;
+    discountReason: string | null;
+    /** Why it was removed after "Envoyer". */
+    voidReason: string | null;
+    /** After discount. */
     total: number;
   }[];
   payments: { method: string; amount: number; tendered: number; changeGiven: number }[];

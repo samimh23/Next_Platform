@@ -17,6 +17,7 @@ const STATUS: Record<OrderStatus, { label: string; variant: 'secondary' | 'destr
   paid: { label: 'Payé', variant: 'secondary' },
   cancelled: { label: 'Annulé', variant: 'destructive' },
   open: { label: 'En cours', variant: 'outline' },
+  refunded: { label: 'Remboursé', variant: 'destructive' },
 };
 
 export default function SalesPage({ searchParams }: PageProps<'/owner/sales'>) {
@@ -34,7 +35,7 @@ async function SalesList({ searchParams }: Pick<PageProps<'/owner/sales'>, 'sear
   const params = await searchParams;
   const today = await todayInTunis();
   const date = isDate(params.date) ? params.date : today;
-  const status = (['paid', 'cancelled', 'open'] as const).find((s) => s === params.status);
+  const status = (['paid', 'cancelled', 'open', 'refunded'] as const).find((s) => s === params.status);
   const me = await getMe();
   const branch = me.branches[0];
   if (!branch) return <p className="text-muted-foreground">Aucun établissement.</p>;
@@ -57,7 +58,7 @@ async function SalesList({ searchParams }: Pick<PageProps<'/owner/sales'>, 'sear
       </div>
 
       <nav className="flex flex-wrap gap-2 text-sm" aria-label="Filtrer par statut">
-        {[undefined, 'paid', 'cancelled', 'open'].map((s) => (
+        {[undefined, 'paid', 'refunded', 'cancelled', 'open'].map((s) => (
           <Link
             key={s ?? 'all'}
             href={statusHref(s as OrderStatus | undefined)}

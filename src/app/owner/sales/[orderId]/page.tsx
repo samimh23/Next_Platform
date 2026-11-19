@@ -7,7 +7,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { ownerFetch } from '@/lib/backend/server';
 import { BackendError } from '@/lib/backend/errors';
 import type { OrderDetail } from '@/lib/backend/types';
-import { formatTimeTunis, PAYMENT_LABEL } from '@/lib/dates';
+import { CANCEL_REASON, DISCOUNT_REASON, formatTimeTunis, PAYMENT_LABEL } from '@/lib/dates';
 import { formatDT } from '@/lib/money';
 
 export const metadata: Metadata = { title: 'Ticket' };
@@ -45,8 +45,10 @@ async function Order({ params }: Pick<PageProps<'/owner/sales/[orderId]'>, 'para
         <p className="text-muted-foreground">
           {formatTimeTunis(o.closedAt ?? o.openedAt)} · {o.tableName ? `table ${o.tableName}` : 'comptoir'} · caisse{' '}
           {o.deviceCode ?? '—'}{' '}
-          <Badge variant={o.status === 'cancelled' ? 'destructive' : o.status === 'open' ? 'outline' : 'secondary'}>
-            {o.status === 'paid' ? 'Payé' : o.status === 'cancelled' ? 'Annulé' : 'En cours'}
+          <Badge
+            variant={o.status === 'cancelled' || o.status === 'refunded' ? 'destructive' : o.status === 'open' ? 'outline' : 'secondary'}
+          >
+            {{ paid: 'Payé', cancelled: 'Annulé', open: 'En cours', refunded: 'Remboursé' }[o.status]}
           </Badge>
         </p>
       </div>
@@ -66,12 +68,29 @@ async function Order({ params }: Pick<PageProps<'/owner/sales/[orderId]'>, 'para
                     {l.modifiers.length > 0 && (
                       <span className="block text-muted-foreground">{l.modifiers.map((m) => m.name).join(', ')}</span>
                     )}
+                    {l.discountType && (
+                      <span className="block text-amber-700 dark:text-amber-400">
+                        {l.discountType === 'free' ? 'Offert' : `Remise −${formatDT(l.discount)}`}
+                        {l.discountReason && ` · ${DISCOUNT_REASON[l.discountReason] ?? l.discountReason}`}
+                      </span>
+                    )}
                   </span>
-                  <span className="tabular-nums">{formatDT(l.total)}</span>
+                  <span className="tabular-nums">
+                    {l.discountType && (
+                      <span className="mr-2 text-muted-foreground line-through">{formatDT(l.total + l.discount)}</span>
+                    )}
+                    {formatDT(l.total)}
+                  </span>
                 </li>
               ))}
           </ul>
 
+          {o.lines.some((l) => l.discount > 0) && (
+            <div className="flex justify-between border-t pt-3 text-amber-700 tabular-nums dark:text-amber-400">
+              <span>Remises & offerts</span>
+              <span>−{formatDT(o.lines.reduce((s, l) => s + l.discount, 0))}</span>
+            </div>
+          )}
           <div className="flex justify-between border-t pt-3 text-base font-semibold">
             <span>Total TTC</span>
             <span className="tabular-nums">{formatDT(o.total)}</span>
@@ -87,6 +106,7 @@ async function Order({ params }: Pick<PageProps<'/owner/sales/[orderId]'>, 'para
           {o.payments.map((p, i) => (
             <div key={i} className="flex justify-between tabular-nums">
               <span>
+                {p.amount < 0 && 'Remboursé · '}
                 {PAYMENT_LABEL[p.method] ?? p.method}
                 {p.method === 'cash' && p.changeGiven > 0 && (
                   <span className="text-muted-foreground">
@@ -101,6 +121,19 @@ async function Order({ params }: Pick<PageProps<'/owner/sales/[orderId]'>, 'para
         </CardContent>
       </Card>
 
+      {o.status === 'refunded' && (
+        <Card className="border-destructive/50">
+          <CardHeader>
+            <CardTitle>Remboursé</CardTitle>
+          </CardHeader>
+          <CardContent className="text-sm">
+            {o.refundedAt && <>Le {formatTimeTunis(o.refundedAt)}</>}
+            {o.refundReason && <> · motif : {CANCEL_REASON[o.refundReason] ?? o.refundReason}</>}
+            <p className="text-muted-foreground">Ce ticket n’est pas compté dans le chiffre d’affaires.</p>
+          </CardContent>
+        </Card>
+      )}
+
       {/* Control: items removed by the cashier stay visible to the owner. */}
       {removed.length > 0 && (
         <Card>
@@ -111,8 +144,11 @@ async function Order({ params }: Pick<PageProps<'/owner/sales/[orderId]'>, 'para
             <ul className="grid gap-1 text-sm text-muted-foreground">
               {removed.map((l) => (
                 <li key={l.id} className="flex justify-between">
-                  <span className="line-through">
-                    {l.qty} × {l.name}
+                  <span>
+                    <span className="line-through">
+                      {l.qty} × {l.name}
+                    </span>
+                    {l.voidReason && <span> · après envoi : {CANCEL_REASON[l.voidReason] ?? l.voidReason}</span>}
                   </span>
                   <span className="tabular-nums">{formatDT((l.unitPrice + l.modifiersPrice) * l.qty)}</span>
                 </li>
