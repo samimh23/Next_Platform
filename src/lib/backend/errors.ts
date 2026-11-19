@@ -25,6 +25,7 @@ const MESSAGES: Record<string, string> = {
   AREA_NOT_EMPTY: 'Cette salle contient encore des tables. Déplacez-les ou supprimez-les d’abord.',
   TABLE_NOT_FOUND: 'Cette table est introuvable.',
   TABLE_NAME_TAKEN: 'Ce nom de table existe déjà dans votre établissement.',
+  CASH_SESSION_NOT_FOUND: 'Cette clôture de caisse est introuvable.',
   STAFF_NOT_FOUND: 'Ce membre du personnel est introuvable.',
   INVALID_MODIFIERS: 'Les options ne sont pas valides (vérifiez minimum et maximum).',
   NETWORK: 'Le serveur ne répond pas. Réessayez dans un instant.',

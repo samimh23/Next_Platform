@@ -156,3 +156,29 @@ export interface Floor {
   areas: Area[];
   tables: DiningTable[];
 }
+
+/** A cash drawer's day (amounts in millimes). */
+export interface CashSession {
+  id: string;
+  status: 'open' | 'closed';
+  drawer: { id: string; code: string; name: string } | null;
+  openedAt: string;
+  openedBy: string | null;
+  openingFloat: number;
+  closedAt: string | null;
+  closedBy: string | null;
+  countedCash: number | null;
+  expectedCash: number | null;
+  /** counted − expected: negative = cash missing. */
+  difference: number | null;
+  cashSales: number;
+  cardSales: number;
+  cashIn: number;
+  cashOut: number;
+  ticketCount: number;
+  note: string | null;
+}
+
+export interface CashSessionDetail extends CashSession {
+  movements: { id: string; type: 'in' | 'out'; amount: number; reason: string; staff: string | null; createdAt: string }[];
+}
