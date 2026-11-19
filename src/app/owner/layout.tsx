@@ -12,6 +12,7 @@ const NAV = [
   { href: '/owner/floor', label: 'Salle & tables' },
   { href: '/owner/staff', label: 'Personnel' },
   { href: '/owner/devices', label: 'Caisses' },
+  { href: '/owner/settings', label: 'Établissement' },
 ];
 
 /**

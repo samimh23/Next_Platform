@@ -182,3 +182,14 @@ export interface CashSession {
 export interface CashSessionDetail extends CashSession {
   movements: { id: string; type: 'in' | 'out'; amount: number; reason: string; staff: string | null; createdAt: string }[];
 }
+
+/** The café's details printed on receipts. */
+export interface Business {
+  businessName: string;
+  /** Matricule fiscal. */
+  taxId: string | null;
+  branchName: string;
+  address: string | null;
+  phone: string | null;
+  receiptFooter: string | null;
+}
