@@ -7,7 +7,7 @@ import { Card, CardContent } from '@/components/ui/card';
 import { setDeviceDisabledAction, setDevicePaymentsAction } from '@/lib/actions/devices';
 import type { Device } from '@/lib/backend/types';
 
-const ROLE_LABEL: Record<Device['role'], string> = { hub: 'Caisse principale', pos: 'Caisse', kds: 'Écran cuisine' };
+const ROLE_LABEL: Record<Device['role'], string> = { hub: 'Caisse principale', pos: 'Caisse secondaire', kds: 'Écran cuisine' };
 
 export function DeviceList({ devices, canManage }: { devices: Device[]; canManage: boolean }) {
   if (devices.length === 0) {
@@ -57,6 +57,7 @@ function DeviceCard({ device: d, canManage }: { device: Device; canManage: boole
           <p className="font-medium">
             <span className="mr-2 rounded bg-muted px-1.5 py-0.5 font-mono text-xs">{d.code}</span>
             {d.name}
+            <RoleBadge role={d.role} />
           </p>
           <p className="text-sm text-muted-foreground">
             {ROLE_LABEL[d.role]} · {d.lastSeq} événement{d.lastSeq > 1 ? 's' : ''} reçu{d.lastSeq > 1 ? 's' : ''}
@@ -106,6 +107,23 @@ function DeviceCard({ device: d, canManage }: { device: Device; canManage: boole
       </CardContent>
     </Card>
   );
+}
+
+/** PRINCIPALE (filled) / SECONDAIRE (outlined) — same badges as on the POS screens. */
+function RoleBadge({ role }: { role: Device['role'] }) {
+  if (role === 'hub')
+    return (
+      <span className="ml-2 rounded-full bg-primary px-2 py-0.5 text-xs font-semibold tracking-wide text-primary-foreground">
+        PRINCIPALE
+      </span>
+    );
+  if (role === 'pos')
+    return (
+      <span className="ml-2 rounded-full border border-primary px-2 py-0.5 text-xs font-semibold tracking-wide text-primary">
+        SECONDAIRE
+      </span>
+    );
+  return null;
 }
 
 const rtf = new Intl.RelativeTimeFormat('fr', { numeric: 'auto' });

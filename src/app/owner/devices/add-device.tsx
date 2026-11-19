@@ -40,8 +40,8 @@ export function AddDevice({
         <CardTitle>Ajouter une caisse</CardTitle>
         <CardDescription>
           {hasHub
-            ? 'Ajoutez une tablette ou un PC supplémentaire.'
-            : 'Commencez par la caisse principale (Hub) : c’est elle qui relie les autres caisses du café.'}
+            ? 'Ajoutez une caisse secondaire (tablette de serveur ou autre PC) : elle se relie à la caisse principale par le Wi-Fi.'
+            : 'Commencez par la caisse principale, le PC du comptoir : c’est elle qui relie les autres caisses du café.'}
         </CardDescription>
       </CardHeader>
       <CardContent className="grid gap-4">
@@ -56,10 +56,10 @@ export function AddDevice({
         ) : (
           <div className="flex flex-wrap gap-2">
             <Button onClick={() => create(hasHub ? 'pos' : 'hub')} disabled={pending}>
-              {pending ? 'Création du code…' : hasHub ? 'Ajouter une caisse' : 'Ajouter la caisse principale'}
+              {pending ? 'Création du code…' : hasHub ? 'Ajouter une caisse secondaire' : 'Ajouter la caisse principale'}
             </Button>
             {hasHub && (
-              <Button variant="outline" onClick={() => create('hub')} disabled={pending}>
+              <Button variant="outline" onClick={() => confirm(REPLACE_WARNING) && create('hub')} disabled={pending}>
                 Remplacer la caisse principale
               </Button>
             )}
@@ -69,6 +69,12 @@ export function AddDevice({
     </Card>
   );
 }
+
+const REPLACE_WARNING = [
+  'Remplacer la caisse principale ?',
+  'La caisse appairée avec ce code deviendra la caisse principale. L’ancienne deviendra une caisse secondaire (elle pourra toujours encaisser).',
+  'Avant : encaissez ou annulez les tickets ouverts sur l’ancienne caisse principale.',
+].join('\n\n');
 
 function PairingCodeBox({ code, remaining }: { code: PairingCode; remaining: number }) {
   const minutes = Math.floor(remaining / 60);
