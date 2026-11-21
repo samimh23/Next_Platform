@@ -36,6 +36,8 @@ const MESSAGES: Record<string, string> = {
   RECEIPT_REFUNDED: 'Ce ticket a été remboursé : il ne donne pas de points.',
   LOYALTY_DISABLED: 'Ce café n’a pas (encore) de programme de fidélité.',
   INVALID_REWARD: 'Une récompense est incomplète.',
+  REWARD_NOT_FOUND: 'Cette récompense n’existe plus.',
+  NOT_ENOUGH_POINTS: 'Pas assez de points pour cette récompense.',
   NETWORK: 'Le serveur ne répond pas. Réessayez dans un instant.',
 };
 

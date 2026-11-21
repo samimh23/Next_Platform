@@ -39,6 +39,7 @@ export const DISCOUNT_REASON: Record<string, string> = {
   error: 'Erreur',
   complaint: 'Réclamation client',
   other: 'Autre',
+  loyalty: 'Fidélité',
 };
 
 /** Why something sent was cancelled, or a ticket refunded (same codes as the POS). */

@@ -8,6 +8,7 @@ import { customerFetch, hasCustomerSession, publicFetch } from '@/lib/backend/cu
 import { BackendError } from '@/lib/backend/errors';
 import type { CafeDetail, MyCafe } from '@/lib/backend/types';
 import { formatDateTimeTunis } from '@/lib/dates';
+import { UseReward } from './use-reward';
 
 export const metadata: Metadata = { title: 'Café' };
 
@@ -113,14 +114,19 @@ async function Cafe({ params }: Pick<PageProps<'/app/cafes/[cafeId]'>, 'params'>
                         {ready && '🎁 '}
                         {r.name}
                       </span>
-                      <span className="shrink-0 tabular-nums text-muted-foreground">{r.points} pts</span>
+                      <span className="flex shrink-0 items-center gap-3">
+                        <span className="tabular-nums text-muted-foreground">{r.points} pts</span>
+                        {ready && <UseReward cafeId={cafe.id} rewardId={r.id} rewardName={r.name} />}
+                      </span>
                     </li>
                   );
                 })}
               </ul>
             )}
             {mine && rewards.some((r) => mine.balance >= r.points) && (
-              <p className="mt-4 text-sm text-muted-foreground">Demandez votre récompense à la caisse.</p>
+              <p className="mt-4 text-sm text-muted-foreground">
+                Touchez « Utiliser » à la caisse et montrez le code au caissier.
+              </p>
             )}
           </CardContent>
         </Card>

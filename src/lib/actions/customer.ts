@@ -86,3 +86,33 @@ export async function claimAction(_prev: ClaimState, formData: FormData): Promis
     return { error: messageFor(e) };
   }
 }
+
+export interface RedemptionCode {
+  code: string;
+  expiresAt: string;
+  rewardName: string;
+  points: number;
+}
+
+/** "Utiliser" on a reward: a 6-digit code for the cashier. Points are spent when the POS validates it. */
+export async function createRedemptionAction(
+  cafeId: string,
+  rewardId: string,
+): Promise<{ ok: true; data: RedemptionCode } | { ok: false; error: string }> {
+  if (!z.string().uuid().safeParse(cafeId).success || !z.string().min(1).max(40).safeParse(rewardId).success) {
+    return { ok: false, error: 'Demande invalide.' };
+  }
+  const token = (await cookies()).get(CUSTOMER_ACCESS_COOKIE)?.value;
+  if (!token) redirect('/app/login');
+  try {
+    const data = await callBackend<RedemptionCode>(`/v1/customer/points/${cafeId}/redemptions`, {
+      method: 'POST',
+      body: { rewardId },
+      accessToken: token,
+    });
+    return { ok: true, data };
+  } catch (e) {
+    if (e instanceof BackendError && e.status === 401) redirect('/app/login');
+    return { ok: false, error: messageFor(e) };
+  }
+}
