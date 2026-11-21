@@ -47,3 +47,13 @@ export async function updateBusinessAction(branchId: string, input: BusinessInpu
     return { ok: false, error: messageFor(e) };
   }
 }
+
+/** Turns the morning summary email on or off (for the person logged in). */
+export async function setDailyEmailAction(on: boolean): Promise<ActionResult<{ dailyEmail: boolean }>> {
+  try {
+    const data = await ownerFetch<{ dailyEmail: boolean }>('/v1/owner/me/preferences', { method: 'PUT', body: { dailyEmail: on === true } });
+    return { ok: true, data };
+  } catch (e) {
+    return { ok: false, error: messageFor(e) };
+  }
+}

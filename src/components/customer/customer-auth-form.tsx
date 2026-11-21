@@ -64,6 +64,14 @@ export function CustomerAuthForm({ mode, next }: { mode: 'login' | 'signup'; nex
             hint={signup ? 'Au moins 8 caractères' : undefined}
             error={state.fields?.password}
           />
+          {!signup && (
+            <Link
+              href="/app/forgot-password"
+              className="-mt-2 justify-self-end text-sm text-muted-foreground underline underline-offset-4"
+            >
+              Mot de passe oublié ?
+            </Link>
+          )}
         </CardContent>
         <CardFooter className="mt-6 flex flex-col gap-3">
           <Button type="submit" className="w-full" disabled={pending}>

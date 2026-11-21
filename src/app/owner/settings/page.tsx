@@ -3,6 +3,7 @@ import { Suspense } from 'react';
 import { getMe, ownerFetch } from '@/lib/backend/server';
 import type { Business } from '@/lib/backend/types';
 import { BusinessForm } from './business-form';
+import { DailyEmailToggle } from './daily-email-toggle';
 
 export const metadata: Metadata = { title: 'Établissement' };
 
@@ -24,6 +25,14 @@ async function Section() {
   const me = await getMe();
   const branch = me.branches[0];
   if (!branch) return <p className="text-muted-foreground">Aucun établissement.</p>;
-  const business = await ownerFetch<Business>(`/v1/owner/branches/${branch.id}/business`);
-  return <BusinessForm branchId={branch.id} business={business} canEdit={me.user.role === 'owner'} />;
+  const [business, prefs] = await Promise.all([
+    ownerFetch<Business>(`/v1/owner/branches/${branch.id}/business`),
+    ownerFetch<{ dailyEmail: boolean }>('/v1/owner/me/preferences'),
+  ]);
+  return (
+    <>
+      <BusinessForm branchId={branch.id} business={business} canEdit={me.user.role === 'owner'} />
+      {me.user.role === 'owner' && <DailyEmailToggle on={prefs.dailyEmail} email={me.user.email} />}
+    </>
+  );
 }

@@ -43,6 +43,7 @@ const MESSAGES: Record<string, string> = {
   NO_CLUB_MEMBERS: 'Aucun de ces clients n’est membre du club.',
   INVALID_GIFT: 'Le cadeau est incomplet.',
   GIFT_NOT_FOUND: 'Ce cadeau a déjà été utilisé ou a expiré.',
+  RESET_LINK_INVALID: 'Ce lien a expiré ou a déjà servi. Demandez-en un nouveau (« Mot de passe oublié »).',
   NETWORK: 'Le serveur ne répond pas. Réessayez dans un instant.',
 };
 
