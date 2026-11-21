@@ -7,3 +7,9 @@ export async function todayInTunis(): Promise<string> {
   await connection();
   return tunisToday(Date.now());
 }
+
+/** The current time at request time (for "il y a 3 jours"), never baked into a prerender. */
+export async function requestNowMs(): Promise<number> {
+  await connection();
+  return Date.now();
+}

@@ -40,6 +40,9 @@ const MESSAGES: Record<string, string> = {
   NOT_ENOUGH_POINTS: 'Pas assez de points pour cette récompense.',
   STOCK_ITEM_NOT_FOUND: 'Cet ingrédient est introuvable.',
   INVALID_RECIPE: 'La recette n’est pas valide.',
+  NO_CLUB_MEMBERS: 'Aucun de ces clients n’est membre du club.',
+  INVALID_GIFT: 'Le cadeau est incomplet.',
+  GIFT_NOT_FOUND: 'Ce cadeau a déjà été utilisé ou a expiré.',
   NETWORK: 'Le serveur ne répond pas. Réessayez dans un instant.',
 };
 

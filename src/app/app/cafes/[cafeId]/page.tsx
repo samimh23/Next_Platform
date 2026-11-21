@@ -8,6 +8,7 @@ import { customerFetch, hasCustomerSession, publicFetch } from '@/lib/backend/cu
 import { BackendError } from '@/lib/backend/errors';
 import type { CafeDetail, MyCafe } from '@/lib/backend/types';
 import { formatDateTimeTunis } from '@/lib/dates';
+import { ClubToggle } from './club-toggle';
 import { UseReward } from './use-reward';
 
 export const metadata: Metadata = { title: 'Café' };
@@ -92,6 +93,29 @@ async function Cafe({ params }: Pick<PageProps<'/app/cafes/[cafeId]'>, 'params'>
           </Card>
         )
       )}
+
+      {mine && mine.gifts.length > 0 && (
+        <Card className="border-amber-300 dark:border-amber-700">
+          <CardHeader>
+            <CardTitle>🎁 Vos cadeaux</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <ul className="grid gap-2">
+              {mine.gifts.map((g) => (
+                <li key={g.id} className="flex items-center justify-between gap-3 text-sm">
+                  <span>
+                    <span className="font-medium">{g.name}</span>
+                    <span className="block text-muted-foreground">Jusqu’au {formatDateTimeTunis(g.expiresAt)}</span>
+                  </span>
+                  <UseReward giftId={g.id} rewardName={g.name} />
+                </li>
+              ))}
+            </ul>
+          </CardContent>
+        </Card>
+      )}
+
+      {mine && cafe.loyalty && <ClubToggle cafeId={cafe.id} cafeName={cafe.name} optIn={mine.optIn} />}
 
       {cafe.loyalty ? (
         <Card>

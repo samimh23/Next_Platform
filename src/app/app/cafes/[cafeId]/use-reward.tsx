@@ -4,10 +4,13 @@ import { useEffect, useState, useTransition } from 'react';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Button } from '@/components/ui/button';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
-import { createRedemptionAction, type RedemptionCode } from '@/lib/actions/customer';
+import { createGiftCodeAction, createRedemptionAction, type RedemptionCode } from '@/lib/actions/customer';
 
-/** "Utiliser": shows a 6-digit code to give the cashier (valid 10 minutes). */
-export function UseReward({ cafeId, rewardId, rewardName }: { cafeId: string; rewardId: string; rewardName: string }) {
+/** "Utiliser": shows a 6-digit code to give the cashier (valid 10 minutes). A reward (points) or a gift. */
+export function UseReward(
+  props: { rewardName: string } & ({ cafeId: string; rewardId: string; giftId?: never } | { giftId: string; cafeId?: never; rewardId?: never }),
+) {
+  const { rewardName } = props;
   const [code, setCode] = useState<RedemptionCode | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [pending, startTransition] = useTransition();
@@ -15,7 +18,9 @@ export function UseReward({ cafeId, rewardId, rewardName }: { cafeId: string; re
   const ask = () =>
     startTransition(async () => {
       setError(null);
-      const r = await createRedemptionAction(cafeId, rewardId);
+      const r = props.giftId
+        ? await createGiftCodeAction(props.giftId)
+        : await createRedemptionAction(props.cafeId ?? '', props.rewardId ?? '');
       if (r.ok) setCode(r.data);
       else setError(r.error);
     });
@@ -64,9 +69,11 @@ function CodeView({ code, onAgain }: { code: RedemptionCode; onAgain: () => void
         {code.code}
       </p>
       <p className="text-sm text-muted-foreground">
-        {code.points} points · valable encore {Math.floor(left / 60)}:{String(left % 60).padStart(2, '0')}
+        {code.points > 0 ? `${code.points} points · ` : 'Cadeau du café · '}valable encore {Math.floor(left / 60)}:{String(left % 60).padStart(2, '0')}
       </p>
-      <p className="text-xs text-muted-foreground">Les points ne sont retirés que quand la caisse valide le code.</p>
+      {code.points > 0 && (
+        <p className="text-xs text-muted-foreground">Les points ne sont retirés que quand la caisse valide le code.</p>
+      )}
     </div>
   );
 }

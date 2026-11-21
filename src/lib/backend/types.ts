@@ -260,6 +260,9 @@ export interface CafeDetail extends CafeSummary {
 
 export interface MyCafe extends CafeDetail {
   balance: number;
+  /** Member of this café's club. */
+  optIn: boolean;
+  gifts: { id: string; name: string; kind: string; expiresAt: string }[];
   history: { points: number; kind: 'earn' | 'redeem' | 'refund'; receiptNumber: string | null; rewardName: string | null; at: string }[];
 }
 
@@ -309,4 +312,42 @@ export interface StockMovement {
   note: string | null;
   orderId: string | null;
   at: string;
+}
+
+// ── Café club and gifts ──
+
+export interface ClubMember {
+  id: string;
+  name: string;
+  visits: number;
+  /** Millimes, paid tickets scanned at this café. */
+  spent: number;
+  points: number;
+  lastVisit: string | null;
+}
+
+export interface ClubView {
+  /** Customers with points at this café. */
+  customers: number;
+  /** Those who joined the club (visible). */
+  members: ClubMember[];
+}
+
+export interface GiftCampaign {
+  id: string;
+  name: string;
+  kind: 'free_product' | 'amount_off';
+  sentAt: string;
+  expiresAt: string;
+  sent: number;
+  used: number;
+}
+
+export interface CustomerGift {
+  id: string;
+  cafeId: string;
+  cafeName: string;
+  name: string;
+  kind: 'free_product' | 'amount_off';
+  expiresAt: string;
 }

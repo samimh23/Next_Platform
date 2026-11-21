@@ -32,6 +32,16 @@ export function ClaimButton({ code }: { code: string }) {
         </Alert>
       )}
       <input type="hidden" name="code" value={code} />
+      <label className="flex items-start gap-3 text-left text-sm">
+        <input type="checkbox" name="optIn" className="mt-0.5 size-4" />
+        <span>
+          Rejoindre le club de ce café
+          <span className="block text-muted-foreground">
+            Le café voit votre prénom et vos visites (jamais votre email) et peut vous envoyer des cadeaux. Vous pouvez
+            quitter le club à tout moment.
+          </span>
+        </span>
+      </label>
       <Button type="submit" size="lg" disabled={pending}>
         {pending ? 'Un instant…' : 'Récupérer mes points'}
       </Button>

@@ -1,6 +1,7 @@
 'use server';
 
 import { cookies } from 'next/headers';
+import { refresh } from 'next/cache';
 import { redirect } from 'next/navigation';
 import { z } from 'zod';
 import {
@@ -77,10 +78,17 @@ export type ClaimState = { result?: ClaimResult; error?: string };
 /** "Récupérer mes points" on the page the receipt QR opens. */
 export async function claimAction(_prev: ClaimState, formData: FormData): Promise<ClaimState> {
   const code = String(formData.get('code') ?? '');
+  const optIn = formData.get('optIn') === 'on';
   const token = (await cookies()).get(CUSTOMER_ACCESS_COOKIE)?.value;
   if (!token) redirect(`/app/login?next=${encodeURIComponent(`/r/${code}`)}`);
   try {
-    return { result: await callBackend<ClaimResult>('/v1/customer/claims', { method: 'POST', body: { code }, accessToken: token }) };
+    return {
+      result: await callBackend<ClaimResult>('/v1/customer/claims', {
+        method: 'POST',
+        body: { code, ...(optIn && { optIn: true }) },
+        accessToken: token,
+      }),
+    };
   } catch (e) {
     if (e instanceof BackendError && e.status === 401) redirect(`/app/login?next=${encodeURIComponent(`/r/${code}`)}`);
     return { error: messageFor(e) };
@@ -94,25 +102,37 @@ export interface RedemptionCode {
   points: number;
 }
 
-/** "Utiliser" on a reward: a 6-digit code for the cashier. Points are spent when the POS validates it. */
-export async function createRedemptionAction(
-  cafeId: string,
-  rewardId: string,
-): Promise<{ ok: true; data: RedemptionCode } | { ok: false; error: string }> {
-  if (!z.string().uuid().safeParse(cafeId).success || !z.string().min(1).max(40).safeParse(rewardId).success) {
-    return { ok: false, error: 'Demande invalide.' };
-  }
+type Result<T> = { ok: true; data: T } | { ok: false; error: string };
+
+async function asCustomer<T>(path: string, init: { method: string; body?: unknown }): Promise<Result<T>> {
   const token = (await cookies()).get(CUSTOMER_ACCESS_COOKIE)?.value;
   if (!token) redirect('/app/login');
   try {
-    const data = await callBackend<RedemptionCode>(`/v1/customer/points/${cafeId}/redemptions`, {
-      method: 'POST',
-      body: { rewardId },
-      accessToken: token,
-    });
-    return { ok: true, data };
+    return { ok: true, data: await callBackend<T>(path, { ...init, accessToken: token }) };
   } catch (e) {
     if (e instanceof BackendError && e.status === 401) redirect('/app/login');
     return { ok: false, error: messageFor(e) };
   }
+}
+
+/** "Utiliser" on a reward: a 6-digit code for the cashier. Points are spent when the POS validates it. */
+export async function createRedemptionAction(cafeId: string, rewardId: string): Promise<Result<RedemptionCode>> {
+  if (!z.string().uuid().safeParse(cafeId).success || !z.string().min(1).max(40).safeParse(rewardId).success) {
+    return { ok: false, error: 'Demande invalide.' };
+  }
+  return asCustomer(`/v1/customer/points/${cafeId}/redemptions`, { method: 'POST', body: { rewardId } });
+}
+
+/** "Utiliser" on a gift from the café: same 6-digit code, no points. */
+export async function createGiftCodeAction(giftId: string): Promise<Result<RedemptionCode>> {
+  if (!z.string().uuid().safeParse(giftId).success) return { ok: false, error: 'Demande invalide.' };
+  return asCustomer(`/v1/customer/gifts/${giftId}/code`, { method: 'POST' });
+}
+
+/** Join or leave a café's club (shares first name and visits, receives its gifts). */
+export async function setClubAction(cafeId: string, optIn: boolean): Promise<Result<{ optIn: boolean }>> {
+  if (!z.string().uuid().safeParse(cafeId).success) return { ok: false, error: 'Demande invalide.' };
+  const r = await asCustomer<{ optIn: boolean }>(`/v1/customer/cafes/${cafeId}/club`, { method: 'PUT', body: { optIn } });
+  if (r.ok) refresh();
+  return r;
 }

@@ -4,7 +4,9 @@ import { Suspense } from 'react';
 import { buttonVariants } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { customerFetch } from '@/lib/backend/customer-server';
-import type { PointsBalance } from '@/lib/backend/types';
+import type { CustomerGift, PointsBalance } from '@/lib/backend/types';
+import { formatDateTimeTunis } from '@/lib/dates';
+import { UseReward } from './cafes/[cafeId]/use-reward';
 
 export const metadata: Metadata = { title: 'Mes points' };
 
@@ -16,6 +18,9 @@ export default function MyPointsPage() {
         <h1 className="text-2xl font-bold tracking-tight">Mes points</h1>
         <p className="text-muted-foreground">Scannez le QR code de votre ticket de caisse pour gagner des points.</p>
       </div>
+      <Suspense fallback={null}>
+        <Gifts />
+      </Suspense>
       <Suspense fallback={<div className="h-40 animate-pulse rounded-xl bg-muted" aria-hidden />}>
         <Balances />
       </Suspense>
@@ -65,5 +70,29 @@ async function Balances() {
         </li>
       ))}
     </ul>
+  );
+}
+
+/** Gifts the customer's cafés sent them (club members only), soonest to expire first. */
+async function Gifts() {
+  const gifts = await customerFetch<CustomerGift[]>('/v1/customer/gifts');
+  if (gifts.length === 0) return null;
+  return (
+    <section className="grid gap-2 rounded-xl border border-amber-300 p-4 dark:border-amber-700" aria-label="Vos cadeaux">
+      <h2 className="font-semibold">🎁 Vos cadeaux</h2>
+      <ul className="grid gap-3">
+        {gifts.map((g) => (
+          <li key={g.id} className="flex items-center justify-between gap-3 text-sm">
+            <span className="min-w-0">
+              <span className="font-medium">{g.name}</span>
+              <span className="block truncate text-muted-foreground">
+                {g.cafeName} · jusqu’au {formatDateTimeTunis(g.expiresAt)}
+              </span>
+            </span>
+            <UseReward giftId={g.id} rewardName={`${g.name} · ${g.cafeName}`} />
+          </li>
+        ))}
+      </ul>
+    </section>
   );
 }
