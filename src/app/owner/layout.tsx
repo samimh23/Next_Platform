@@ -9,6 +9,7 @@ const NAV = [
   { href: '/owner/sales', label: 'Ventes' },
   { href: '/owner/cash', label: 'Clôtures' },
   { href: '/owner/menu', label: 'Menu' },
+  { href: '/owner/stock', label: 'Stock' },
   { href: '/owner/floor', label: 'Salle & tables' },
   { href: '/owner/staff', label: 'Personnel' },
   { href: '/owner/loyalty', label: 'Fidélité' },

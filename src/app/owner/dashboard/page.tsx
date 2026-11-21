@@ -6,7 +6,7 @@ import { DateFilter } from '@/components/date-filter';
 import { Badge } from '@/components/ui/badge';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { getMe, ownerFetch } from '@/lib/backend/server';
-import type { OrderView, SalesSummary } from '@/lib/backend/types';
+import type { OrderView, SalesSummary, StockView } from '@/lib/backend/types';
 import { formatDayFr, formatTimeTunis, isDate, PAYMENT_LABEL } from '@/lib/dates';
 import { todayInTunis } from '@/lib/server-time';
 import { formatDT } from '@/lib/money';
@@ -33,10 +33,12 @@ async function Dashboard({ searchParams }: Pick<PageProps<'/owner/dashboard'>, '
   const branch = me.branches[0];
   if (!branch) return <p className="text-muted-foreground">Aucun établissement.</p>;
 
-  const [s, orders] = await Promise.all([
+  const [s, orders, stock] = await Promise.all([
     ownerFetch<SalesSummary>(`/v1/owner/branches/${branch.id}/sales/summary?date=${date}`),
     ownerFetch<OrderView[]>(`/v1/owner/branches/${branch.id}/sales/orders?date=${date}&status=paid&limit=5`),
+    ownerFetch<StockView>(`/v1/owner/branches/${branch.id}/stock`),
   ]);
+  const lowStock = stock.items.filter((i) => i.low);
   const isToday = date === today;
 
   return (
@@ -50,6 +52,19 @@ async function Dashboard({ searchParams }: Pick<PageProps<'/owner/dashboard'>, '
         </p>
         <DateFilter basePath="/owner/dashboard" date={date} today={today} />
       </div>
+
+      {lowStock.length > 0 && (
+        <Link
+          href="/owner/stock"
+          className="rounded-lg border border-destructive/40 bg-destructive/5 px-4 py-3 text-sm hover:bg-destructive/10"
+        >
+          <span className="font-medium">
+            Stock bas : {lowStock.slice(0, 3).map((i) => i.name).join(', ')}
+            {lowStock.length > 3 && ` et ${lowStock.length - 3} autre${lowStock.length > 4 ? 's' : ''}`}
+          </span>{' '}
+          <span className="text-muted-foreground">→ Voir le stock</span>
+        </Link>
+      )}
 
       {/* Hero figure + KPI row */}
       <section aria-label="Chiffres du jour" className="grid gap-4">

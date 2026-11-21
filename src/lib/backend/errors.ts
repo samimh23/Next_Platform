@@ -38,6 +38,8 @@ const MESSAGES: Record<string, string> = {
   INVALID_REWARD: 'Une récompense est incomplète.',
   REWARD_NOT_FOUND: 'Cette récompense n’existe plus.',
   NOT_ENOUGH_POINTS: 'Pas assez de points pour cette récompense.',
+  STOCK_ITEM_NOT_FOUND: 'Cet ingrédient est introuvable.',
+  INVALID_RECIPE: 'La recette n’est pas valide.',
   NETWORK: 'Le serveur ne répond pas. Réessayez dans un instant.',
 };
 

@@ -278,3 +278,35 @@ export interface ClaimResult {
   points: number;
   balance: number;
 }
+
+// ── Stock ──
+
+export interface StockItem {
+  id: string;
+  name: string;
+  unit: 'g' | 'ml' | 'piece';
+  /** Whole grams / millilitres / pieces; can be below 0. */
+  quantity: number;
+  lowThreshold: number | null;
+  low: boolean;
+  archived: boolean;
+}
+
+export interface Recipe {
+  productId: string;
+  lines: { stockItemId: string; qty: number }[];
+}
+
+export interface StockView {
+  items: StockItem[];
+  recipes: Recipe[];
+}
+
+export interface StockMovement {
+  kind: 'sale' | 'delivery' | 'waste' | 'count';
+  delta: number;
+  quantityAfter: number;
+  note: string | null;
+  orderId: string | null;
+  at: string;
+}
