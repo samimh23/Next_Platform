@@ -48,3 +48,10 @@ export const CANCEL_REASON: Record<string, string> = {
   quality: 'Problème de qualité',
   other: 'Autre',
 };
+
+/** ISO instant → "20 nov. 2026 · 14:05" in Tunisia time. */
+export function formatDateTimeTunis(iso: string): string {
+  const d = new Date(iso);
+  const day = new Intl.DateTimeFormat('fr-FR', { day: 'numeric', month: 'short', year: 'numeric', timeZone: 'Africa/Tunis' }).format(d);
+  return `${day} · ${formatTimeTunis(iso)}`;
+}

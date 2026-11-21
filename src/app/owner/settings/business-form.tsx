@@ -8,7 +8,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { updateBusinessAction } from '@/lib/actions/business';
 import type { Business } from '@/lib/backend/types';
 
-type Fields = Record<keyof Business, string>;
+type Fields = Record<Exclude<keyof Business, 'listed' | 'loyaltyEnabled'>, string> & { listed: boolean };
 
 const toFields = (b: Business): Fields => ({
   businessName: b.businessName,
@@ -17,13 +17,15 @@ const toFields = (b: Business): Fields => ({
   address: b.address ?? '',
   phone: b.phone ?? '',
   receiptFooter: b.receiptFooter ?? '',
+  city: b.city ?? '',
+  listed: b.listed,
 });
 
 export function BusinessForm({ branchId, business, canEdit }: { branchId: string; business: Business; canEdit: boolean }) {
   const [f, setF] = useState<Fields>(toFields(business));
   const [msg, setMsg] = useState<{ ok: boolean; text: string } | null>(null);
   const [pending, startTransition] = useTransition();
-  const set = (k: keyof Fields) => (e: React.ChangeEvent<HTMLInputElement>) => setF({ ...f, [k]: e.target.value });
+  const set = (k: Exclude<keyof Fields, 'listed'>) => (e: React.ChangeEvent<HTMLInputElement>) => setF({ ...f, [k]: e.target.value });
 
   const save = () =>
     startTransition(async () => {
@@ -66,6 +68,25 @@ export function BusinessForm({ branchId, business, canEdit }: { branchId: string
             onChange={set('receiptFooter')}
             maxLength={120}
           />
+          <fieldset className="grid gap-3 rounded-lg border p-4">
+            <legend className="px-1 text-sm font-medium">Application client Kahwti</legend>
+            <label className="flex items-start gap-3 text-sm">
+              <input
+                type="checkbox"
+                name="listed"
+                className="mt-0.5 size-4"
+                checked={f.listed}
+                onChange={(e) => setF({ ...f, listed: e.target.checked })}
+              />
+              <span>
+                Afficher mon café dans la recherche
+                <span className="block text-muted-foreground">
+                  Les clients le trouvent par son nom ou sa ville et voient vos récompenses fidélité.
+                </span>
+              </span>
+            </label>
+            <FormField name="city" label="Ville" placeholder="La Marsa" value={f.city} onChange={set('city')} maxLength={60} />
+          </fieldset>
         </fieldset>
         {canEdit ? (
           <div>

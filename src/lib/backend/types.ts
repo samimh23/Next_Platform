@@ -205,4 +205,76 @@ export interface Business {
   address: string | null;
   phone: string | null;
   receiptFooter: string | null;
+  /** Shown in the Kahwti customer app (search). */
+  listed: boolean;
+  city: string | null;
+  loyaltyEnabled: boolean;
+}
+
+// ── Loyalty (customer app + owner Fidélité page) ──
+
+export interface Reward {
+  id: string;
+  name: string;
+  /** Points it costs. */
+  points: number;
+  kind: 'free_product' | 'amount_off';
+  productId?: string;
+  /** Millimes off (amount_off). */
+  amount?: number;
+}
+
+export interface LoyaltyProgram {
+  enabled: boolean;
+  pointsPerDinar: number;
+  rewards: Reward[];
+}
+
+export interface CustomerView {
+  id: string;
+  email: string;
+  name: string;
+}
+
+export interface CustomerAuthResult {
+  accessToken: string;
+  refreshToken: string;
+  expiresIn: number;
+  customer: CustomerView;
+}
+
+export interface CafeSummary {
+  id: string;
+  name: string;
+  businessName: string;
+  city: string | null;
+  address: string | null;
+  loyalty: boolean;
+  pointsPerDinar: number;
+}
+
+export interface CafeDetail extends CafeSummary {
+  phone: string | null;
+  rewards: Reward[];
+}
+
+export interface MyCafe extends CafeDetail {
+  balance: number;
+  history: { points: number; kind: 'earn' | 'redeem' | 'refund'; receiptNumber: string | null; rewardName: string | null; at: string }[];
+}
+
+export interface PointsBalance {
+  cafeId: string;
+  cafeName: string;
+  city: string | null;
+  balance: number;
+  rewardsAvailable: number;
+}
+
+export interface ClaimResult {
+  cafeId: string;
+  cafeName: string;
+  receiptNumber: string;
+  points: number;
+  balance: number;
 }

@@ -17,6 +17,12 @@ export default function Home() {
           Se connecter
         </Link>
       </div>
+      <p className="text-sm text-muted-foreground">
+        Client d’un café ?{' '}
+        <Link href="/app" className="font-medium text-foreground underline underline-offset-4">
+          Mes points fidélité
+        </Link>
+      </p>
     </main>
   );
 }

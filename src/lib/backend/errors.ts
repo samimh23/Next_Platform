@@ -28,6 +28,14 @@ const MESSAGES: Record<string, string> = {
   CASH_SESSION_NOT_FOUND: 'Cette clôture de caisse est introuvable.',
   STAFF_NOT_FOUND: 'Ce membre du personnel est introuvable.',
   INVALID_MODIFIERS: 'Les options ne sont pas valides (vérifiez minimum et maximum).',
+  CAFE_NOT_FOUND: 'Ce café est introuvable.',
+  TOKEN_EXPIRED: 'Votre session a expiré. Reconnectez-vous.',
+  RECEIPT_INVALID: 'Ce code de ticket n’est pas valide.',
+  RECEIPT_ALREADY_CLAIMED: 'Les points de ce ticket ont déjà été récupérés.',
+  RECEIPT_TOO_OLD: 'Ce ticket a plus de 30 jours : il ne donne plus de points.',
+  RECEIPT_REFUNDED: 'Ce ticket a été remboursé : il ne donne pas de points.',
+  LOYALTY_DISABLED: 'Ce café n’a pas (encore) de programme de fidélité.',
+  INVALID_REWARD: 'Une récompense est incomplète.',
   NETWORK: 'Le serveur ne répond pas. Réessayez dans un instant.',
 };
 

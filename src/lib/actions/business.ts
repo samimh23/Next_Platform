@@ -17,6 +17,8 @@ const BusinessInput = z.object({
   address: optional(160, 'Adresse'),
   phone: optional(30, 'Téléphone'),
   receiptFooter: optional(120, 'Message'),
+  city: optional(60, 'Ville'),
+  listed: z.boolean(),
 });
 export type BusinessInput = z.input<typeof BusinessInput>;
 
@@ -36,6 +38,7 @@ export async function updateBusinessAction(branchId: string, input: BusinessInpu
         address: empty(body.data.address),
         phone: empty(body.data.phone),
         receiptFooter: empty(body.data.receiptFooter),
+        city: empty(body.data.city),
       },
     });
     refresh();
